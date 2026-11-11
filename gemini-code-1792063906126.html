@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بروشور عسل باكندوح الفاخر</title>
+    
+    <!-- خط تجوال للغة العربية -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- مكتبات الحركة والتمرير GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --primary-gold: #c68a00;
+            --dark-amber: #2a1b08;
+            --bg-white: #ffffff;
+            --text-dark: #1f1f1f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* شاشة الترحيب للبدء وتشغيل الصوت */
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #ffffff;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: opacity 0.6s ease, visibility 0.6s;
+        }
+
+        #welcome-overlay h2 {
+            font-size: 2.5rem;
+            color: var(--dark-amber);
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+
+        #welcome-overlay .start-btn {
+            padding: 16px 42px;
+            background: var(--primary-gold);
+            color: #fff;
+            font-weight: 900;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(198, 138, 0, 0.3);
+            transition: transform 0.2s;
+        }
+
+        #welcome-overlay .start-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* الفيديو خلفية كاملة بنقاء */
+        .fullscreen-video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .fullscreen-video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* القائمة العلوية */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--dark-amber);
+            text-decoration: none;
+        }
+
+        .logo span { color: var(--primary-gold); }
+
+        .brochure-tag {
+            background: rgba(198, 138, 0, 0.1);
+            border: 1px solid var(--primary-gold);
+            padding: 6px 18px;
+            border-radius: 20px;
+            color: var(--primary-gold);
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        /* أقسام البروشور باللغة السوداء والذهبية */
+        section {
+            min-height: 110vh;
+            display: flex;
+            align-items: center;
+            padding: 0 8%;
+            position: relative;
+            z-index: 20;
+        }
+
+        .content {
+            max-width: 450px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .content.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 {
+            font-size: 2.6rem;
+            color: var(--dark-amber);
+            margin-bottom: 12px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: #444444;
+            margin-bottom: 15px;
+        }
+
+        .brochure-list {
+            list-style: none;
+        }
+
+        .brochure-list li {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333333;
+            font-weight: 700;
+        }
+
+        .brochure-list li::before {
+            content: "•";
+            color: var(--primary-gold);
+            font-size: 1.8rem;
+            line-height: 0;
+        }
+
+        #sec1 { min-height: 30vh; }
+        #sec2 { justify-content: flex-end; text-align: right; }
+        #sec3 { justify-content: flex-start; text-align: right; }
+        #sec4 { justify-content: flex-end; text-align: right; }
+
+        /* نهاية المشهد: الباركود على الجانب الأيسر لترك المرطبان مكشوفاً في المنتصف/اليمين */
+        .qr-section {
+            min-height: 100vh;
+            display: flex;
+            justify-content: flex-start; /* تم وضعه بالجهة اليسرى */
+            align-items: center;
+            position: relative;
+            z-index: 20;
+            padding-right: 8%;
+        }
+
+        .qr-card-simple {
+            background: rgba(255, 255, 255, 0.92);
+            border: 2px solid var(--primary-gold);
+            border-radius: 20px;
+            padding: 25px 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            backdrop-filter: blur(5px);
+            max-width: 280px;
+        }
+
+        .qr-card-simple h3 {
+            font-size: 1.2rem;
+            color: var(--dark-amber);
+            margin-bottom: 12px;
+            font-weight: 900;
+        }
+
+        .qr-code-img {
+            width: 170px;
+            height: 170px;
+            border-radius: 12px;
+            border: 2px solid var(--primary-gold);
+            padding: 6px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الشاشة الترحيبية -->
+    <div id="welcome-overlay" onclick="startExperience()">
+        <h2>عسل باكندوح الفاخر</h2>
+        <div class="start-btn">افتح البروشور التفاعلي 🔊</div>
+    </div>
+
+    <!-- الهيدر واللوجو -->
+    <header>
+        <a href="#" class="logo">عسل <span>باكندوح</span></a>
+        <div class="brochure-tag">البروشور الرقمي</div>
+    </header>
+
+    <!-- الفيديو خلفية ملء الشاشة -->
+    <div class="fullscreen-video-container">
+        <video id="beeAnimation" playsinline preload="auto">
+            <source src="bee_full_sequence.mov" type="video/quicktime">
+            <source src="bee_full_sequence.mov" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- المشهد 1: الترحيب (النحلة الروبوتية ترحب بالصوت) -->
+    <section id="sec1"></section>
+
+    <!-- المشهد 2: معلومات عن المناحل -->
+    <section id="sec2">
+        <div class="content">
+            <h2>مناحل باكندوح</h2>
+            <p>نستخلص عسلنا من أعمق المناحل الجبلية والوديان النقيّة لضمان أعلى معايير الشفاء والنقاء.</p>
+            <ul class="brochure-list">
+                <li>عسل طبيعي وصافي 100%</li>
+                <li>مفحوص ومضمون مخبرياً</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- المشهد 3: زهرة الرحيق والأنواع -->
+    <section id="sec3">
+        <div class="content">
+            <h2>تنوع الرحيق</h2>
+            <p>قطفة أولى ممتازة تُجمع في مواسم خاصة لنقدم لك أجود أنواع العسل الفاخر:</p>
+            <ul class="brochure-list">
+                <li>عسل سدر ملكي فاخر</li>
+                <li>عسل طلح وحبة البركة</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- المشهد 4: الضمان والتغليف -->
+    <section id="sec4">
+        <div class="content">
+            <h2>تغليف وضمان فاخر</h2>
+            <p>تُحفظ منتجاتنا في عبوات محكمة الإغلاق لتحافظ على جودة ونكهة العسل الأصلية.</p>
+            <ul class="brochure-list">
+                <li>ضمان ذهبي لاسترجاع المنتج</li>
+                <li>توصيل سريع لجميع المناطق</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- نهاية التمرير: بطاقة الباركود الجانبية البسيطة -->
+    <section class="qr-section">
+        <div class="qr-card-simple">
+            <h3>امسح الباركود لتحميل البروشور</h3>
+            <img class="qr-code-img" src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=https://bakandouh.com" alt="QR Code البروشور">
+        </div>
+    </section>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+        const video = document.getElementById('beeAnimation');
+        const overlay = document.getElementById('welcome-overlay');
+
+        function startExperience() {
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.visibility = 'hidden'; }, 600);
+            
+            video.muted = false;
+            video.play();
+
+            // ربط انسيابي ناعم جداً للتمرير بدون أي تقطيع
+            gsap.to(video, {
+                currentTime: video.duration,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 0.5 // رقم صغير يضمن السلاسة الاستثنائية للماوس
+                }
+            });
+
+            // ظهور نصوص البروشور بنعومة
+            gsap.utils.toArray('.content').forEach(content => {
+                ScrollTrigger.create({
+                    trigger: content,
+                    start: "top 75%",
+                    end: "bottom 25%",
+                    onEnter: () => content.classList.add('active'),
+                    onLeaveBack: () => content.classList.remove('active')
+                });
+            });
+        }
+    </script>
+</body>
+</html>
